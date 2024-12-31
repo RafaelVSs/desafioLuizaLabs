@@ -18,9 +18,10 @@ module.exports = {
         }
     },
 
-    async findByIdAndUpdate(id){
+    async findByIdAndUpdate(id, data){
         try{
-            return await Client.findByIdAndUpdate(id)
+            const updatedClient = await Client.findByIdAndUpdate(id, data, { new: true}) 
+            return updatedClient
         }catch (error){
             throw new Error('Error updating client: ' + error.message)
         }
@@ -28,9 +29,29 @@ module.exports = {
 
     async findByIdAndDelete(id){
         try{
-            await Client.findByIdAndDelete(id)
+            const deletedClient = await Client.findByIdAndDelete(id)
+            return deletedClient
         }catch (error){
             throw new Error('Error deleting client: ' + error.message)
         }
-    }
+    },
+
+    async findOneEmail(email){
+        try{
+            const client = await Client.findOne(email)
+            return client
+        }catch (error){
+            throw new Error('Error searching for client by email: ' + error.message)
+        }
+    },
+
+    async createClient(client){
+        try{
+            const newClient = new Client(client)
+            return await newClient.save()
+        }catch (error){
+            throw new Error('Error creating client: ' + error.message)
+        }
+    },
+
 }

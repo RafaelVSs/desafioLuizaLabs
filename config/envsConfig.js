@@ -5,6 +5,7 @@ const all = {
     env: process.env.ENVIRONMENT,
     host: process.env.HOST || 'localhost',
     port: process.env.PORT || 3001,
+    JWT_SECRET: process.env.JWT_SECRET,
 
     database: {
         host: process.env.MONGO_HOST,
