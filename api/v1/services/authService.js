@@ -16,7 +16,7 @@ module.exports = {
                         id: client._id,
                         email: client.email,
                         name: client.name
-                }, JWT_SECRET, { expiresIn: '1m'}
+                }, JWT_SECRET, { expiresIn: '10m'}
             )
             const payload = jwt.decode(token)
             const clientFormated = {token, payload}

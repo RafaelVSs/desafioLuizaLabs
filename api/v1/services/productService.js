@@ -11,12 +11,14 @@ module.exports = {
 
     async getProductById(id){
         try{
-            if(!id){
-                throw new Error('ID are required.')
+            validateId(id)
+            const product = await productRepository.findById(id)
+            if(!product){
+                throw new Error('Product not found or does not exist.')
             }
-            return await productRepository.findById(id)
+            return product
         }catch (error){
-            throw new Error('Product not ofund or does not exist: ' + error.message)
+            throw new Error(error.message)
         }
     },
 

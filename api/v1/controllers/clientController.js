@@ -19,10 +19,10 @@ module.exports = {
             const client = await clientService.getClientById(id)
             return res.status(200).json(client)
         }catch (error){
-            if(error.message === 'Client not found or does not exist: '){
+            if(error.message === 'Client not found or does not exist.'){
                 return res.status(404).json({ message: error.message })
             }
-            return res.status(500).json({ message: 'Internal server error' })
+            return res.status(500).json({ message: error.message })
         }
     },
     

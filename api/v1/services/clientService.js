@@ -12,9 +12,13 @@ module.exports = {
     async getClientById(id){
         try{
             validateId(id)
-            return await clientRepository.findById(id)
+            const client = await clientRepository.findById(id)
+            if(!client){
+                throw new Error('Client not found or does not exist.')
+            } 
+            return client
         }catch (error){
-            throw new Error('Client not found or does not exist: ' + error.message)
+            throw new Error(error.message)
         }
     },
 
