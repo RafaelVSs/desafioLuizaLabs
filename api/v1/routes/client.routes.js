@@ -5,9 +5,9 @@ const validateRequest = require('../middlewares/validateRequest')
 const authMiddlewares = require('../middlewares/authMiddlewares')
 
 router.get('/', authMiddlewares.verifyToken, clientController.getClients)
-router.get('/:id', validateRequest.validateId, clientController.getClientById)
+router.get('/:id', validateRequest.validateIdMongo, clientController.getClientById)
 router.post('/', clientController.createClient)
-router.patch('/:id', validateRequest.validateId, clientController.updateClient)
-router.delete('/:id', validateRequest.validateId, clientController.deleteClient)
+router.patch('/:id', validateRequest.validateIdMongo, clientController.updateClient)
+router.delete('/:id', validateRequest.validateIdMongo, clientController.deleteClient)
 
 module.exports = router

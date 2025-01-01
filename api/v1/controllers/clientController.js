@@ -4,14 +4,12 @@ module.exports = {
     async getClients(req, res){
         try{
             const listClients = await clientService.getClients()
-
             if(!listClients || listClients.length === 0){
                 return res.status(404).json({ message: 'No Clients found.' })
             }
-
             return res.status(200).json(listClients) 
         }catch (error){
-            res.status(500).json({ message: 'Internal server error' })
+            return res.status(500).json({ message: 'Internal server error' })
         }
     },
 
