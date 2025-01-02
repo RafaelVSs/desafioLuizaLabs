@@ -18,9 +18,9 @@ module.exports = {
         }
     },
 
-    async findByIdAndUpdate(id, data){
+    async findByIdAndUpdate(id, clientData){
         try{
-            const updatedClient = await Client.findByIdAndUpdate(id, data, { new: true}) 
+            const updatedClient = await Client.findByIdAndUpdate(id, clientData, { new: true}) 
             return updatedClient
         }catch (error){
             throw new Error('Error updating client: ' + error.message)
@@ -29,8 +29,7 @@ module.exports = {
 
     async findByIdAndDelete(id){
         try{
-            const deletedClient = await Client.findByIdAndDelete(id)
-            return deletedClient
+            return await Client.findByIdAndDelete(id)
         }catch (error){
             throw new Error('Error deleting client: ' + error.message)
         }
