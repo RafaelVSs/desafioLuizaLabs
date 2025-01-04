@@ -1,0 +1,95 @@
+openapi: 3.0.0
+info:
+  title: Challenge Luiza Labs
+  version: 1.0.0
+  description: API for managing clients, products and your favorites list.
+servers:
+  - url: http://localhost:3000
+paths:
+  /api/v1/auth:
+    post:
+      summary: Authenticate a client and return a JWT token.
+      description: Endpoint to log in a client and generate an authentication token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Rafael"
+                email:
+                  type: string
+                  example: "rafael@gmail.com"
+      responses:
+        '200':
+          description: Client authentication token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR..."
+        '400':
+          description: Bad request, invalid credentials.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid credentials."
+        '401':
+          description: Unauthorized, invalid credentials or token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized, invalid credentials."
+        '404':
+          description: Client not found or not registered.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Client not found."
+        '500':
+          description: Error in server.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Internal server error."            
+  /api/v1/clients:
+    post:
+      summary: Create a client.
+      description: This endpoint allows clients to authenticate by providing their username and password. A valid token will be returned upon successful authentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Rafael"
+                email:
+                  type: string
+                  example: "rafael@gmail.com"
+      responses:
+        

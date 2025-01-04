@@ -4,11 +4,12 @@ module.exports = {
     async getClients(req, res){
         try{
             const listClients = await clientService.getClients()
-            if(!listClients || listClients.length === 0){
-                return res.status(404).json({ message: 'No Clients found.' })
-            }
+            
             return res.status(200).json(listClients) 
         }catch (error){
+            if(error.message === 'No Clients found.'){
+                return res.status(404).json({ message: error.message })
+            }
             return res.status(500).json({ message: 'Internal server error' })
         }
     },
@@ -38,7 +39,7 @@ module.exports = {
             }
             return res.status(201).json(newClientFormated)
         }catch (error){
-            if(error.message === 'Name and email are required.'){
+            if(error.message === 'Name and email is required.'){
                 return res.status(400).json({ message: error.message })
             }
 

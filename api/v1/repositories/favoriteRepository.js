@@ -1,12 +1,25 @@
 const Favorite = require('../models/Favorite')
+const productRepository = require('../repositories/productRepository')
+
 
 module.exports = {
     async findByClientId(clientId){
         try{
-            const favorites = await Favorite.findOne({clientId: clientId})
-            return favorites 
+            const favorite = await Favorite.findOne({id_client: clientId})
+            return favorite 
+
         }catch (error){
-            throw new Error('Error searching favorites list.')
+            throw error
+        }
+    },
+
+    async findByProductId(productId){
+        try{
+            const product = await productRepository.findById(productId)
+            return product
+
+        }catch (error){
+            throw error
         }
     },
 
@@ -14,25 +27,23 @@ module.exports = {
         try{
             const newFavorite = new Favorite(favorite)
             return await newFavorite.save()
+
         }catch (error){
-            throw new Error('Error creating favorites list: ' + error.message)
+            throw error
         }
     },
 
-    async deleteFavoriteList(favoriteId){
+    async findByIdAndAddProduct(favoriteId, productId){
         try{
-            return await Favorite.findByIdAndDelete(favoriteId)
-        }catch (error){
-            throw new Error('Error deleting favorites list: ' + error.message)
-        }
-    },
-
-    async findByIdAndAddProduct(favoriteId, favoriteList){
-        try{
-            const updatedFavoriteList = await Favorite.findByIdAndUpdate(favoriteId, favoriteList)
+            const updatedFavoriteList = await Favorite.findByIdAndUpdate(
+                favoriteId, 
+                { $addToSet: { favorite_list: productId } },
+                { new: true }
+            )
             return updatedFavoriteList
+
         }catch (error){
-            throw new Error('Error updating favorites list: ' + error.message)
+            throw error
         }
     }, 
 
@@ -40,11 +51,14 @@ module.exports = {
         try{
             const updatedFavoriteList = await Favorite.findByIdAndUpdate(
                 favoriteId, 
-                { $pull: {favorite_list: productId} }, { new: true }
+                { $pull: {favorite_list: productId} }, 
+                { new: true }
             )
             return updatedFavoriteList.favorite_list
+
         }catch (error){
-            throw new Error('Error removing product from favorites: ' + error.message)
+            throw error
         }
-    }
+    },
+
 }
