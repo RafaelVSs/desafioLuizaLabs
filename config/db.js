@@ -5,10 +5,15 @@ const mongoURI = `mongodb://${config.database.user}:${config.database.password}@
 
 const connection = async () => {
     try{
-        await mongoose.connect(mongoURI, {})
+        await mongoose.connect(mongoURI, {
+            authSource: 'admin',
+            user: config.database.user,
+            pass: config.database.password
+        })
         console.log("Connection successful!")
     } catch (error) {
-        throw new Error('Erro ao conectar ao mongoDB' + error.message)
+        console.error('Error connecting to MongoDB:', error)
+        process.exit(1)
     }
 }
 

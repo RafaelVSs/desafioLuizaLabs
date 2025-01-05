@@ -3,16 +3,12 @@ const clientRepository = require('../repositories/clientRepository')
 module.exports = {
     async getClients(){
         try{
-            const listClients = await clientRepository.findAll()
-            if(!listClients || listClients.length === 0){
-                throw new Error('No Clients found.')
-            }
-            return 
+            return await clientRepository.findAll()
         }catch (error){
-            throw (error)
+            throw error
         }
     },
-    
+
     async getClientById(id){
         try{
             validateId(id)
@@ -22,7 +18,7 @@ module.exports = {
             } 
             return client
         }catch (error){
-            throw new Error(error.message)
+            throw error
         }
     },
 
@@ -38,7 +34,7 @@ module.exports = {
             const client = { name, email } 
             return await clientRepository.createClient(client)
         }catch (error){
-            throw new Error(error.message)
+            throw error
         }
     },
 

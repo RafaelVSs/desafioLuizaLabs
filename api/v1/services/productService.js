@@ -5,7 +5,7 @@ module.exports = {
         try{
             return await productRepository.findAll()
         }catch (error){
-            throw new Error('No products found: ' + error.message)
+            throw error
         }
     },
 
@@ -18,7 +18,7 @@ module.exports = {
             }
             return product
         }catch (error){
-            throw new Error(error.message)
+            throw error
         }
     },
 
@@ -30,7 +30,7 @@ module.exports = {
             const product = { title, image, price }
             return await productRepository.createProduct(product)
         }catch (error){
-            throw new Error(error.message)
+            throw error
         }
     },
 
@@ -43,7 +43,7 @@ module.exports = {
             }
             return await productRepository.findByIdAndDelete(id)
         }catch (error){
-            throw new Error(error.message)
+            throw error
         }
     }
     

@@ -20,12 +20,17 @@ module.exports = {
                 }, JWT_SECRET, { expiresIn: '1h'}
             )
             const payload = jwt.decode(token)
+            const payloadFormated = {
+                id: payload.id,
+                email: payload.email,
+                name: payload.name
+            }
 
-            const clientFormated = {token, payload}
+            const clientFormated = {token, payloadFormated}
             return clientFormated
             
         }catch (error){
-            throw new Error('Error generating token: ' + error.message)
+            throw error
         }
     }
 }    

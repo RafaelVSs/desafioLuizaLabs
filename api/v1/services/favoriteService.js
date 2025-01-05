@@ -29,9 +29,7 @@ module.exports = {
 
             const favoritId = favorite._id
             
-            console.log(productId)
             const existingProduct = await favoriteRepository.findByProductId(productId)
-            console.log(existingProduct)
             if(!existingProduct){
                 throw new Error('Unable to add a product that has not been registered.')
             }
@@ -54,7 +52,7 @@ module.exports = {
                 throw new Error('Client does not have a favorites list.')
             }
 
-            const favoriteId = favorite._id.toString()
+            const favoriteId = favorite._id
 
             const existingProduct = favorite.favorite_list.includes(productId)
             if(!existingProduct){

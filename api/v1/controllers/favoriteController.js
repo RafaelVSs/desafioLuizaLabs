@@ -17,7 +17,7 @@ module.exports = {
                 return res.status(409).json({ message: error.message })
             }
 
-            return res.status(500).json({ message: error.message })
+            return res.status(500).json({ message: 'Internal server Error. ' + error.message })
         }
     },
 
@@ -26,10 +26,10 @@ module.exports = {
             const clientId = req.params.id
             const productId = req.body.productId
             if(!clientId || !productId){
-                return res.status(400).json({ message: 'Client and Product ID id required.' })
+                return res.status(400).json({ message: 'Client and Product ID id are required.' })
             }
             if (!mongoose.isValidObjectId(productId)){
-                return res.status(400).json({ message: 'Invalid ID format' })
+                return res.status(400).json({ message: 'Invalid Product ID format.' })
             }
 
             const FavoriteList = await favoriteService.addProductFavoriteList(clientId, productId)
@@ -41,23 +41,23 @@ module.exports = {
             }
 
             if(error.message === 'Unable to add a product that has not been registered.'){
-                return res.status(404).json({ message: error.message })
+                return res.status(409).json({ message: error.message })
             }
 
             if(error.message === 'Product is already in the favorites list.'){
                 return res.status(409).json({ message: error.message })
             }
 
-            return res.status(500).json({ message: error.message })
+            return res.status(500).json({ message: 'Internal server Error. ' + error.message })
         }
     },
 
     async removeProductFavoriteList(req, res){
         try{
             const clientId = req.params.id
-            const productId = req.body.favoriteList[0]
+            const productId = req.body.productId
             if(!clientId || !productId){
-                return res.status(400).json({ message: 'Client and Product ID id required.' })
+                return res.status(400).json({ message: 'Client and Product ID id are required.' })
             }
 
             const favoriteList = await favoriteService.removeProductFavoriteList(clientId, productId)
@@ -72,7 +72,7 @@ module.exports = {
                 return res.status(404).json({ message: error.message })
             }
 
-            return res.status(500).json({ message: error.message })
+            return res.status(500).json({ message: 'Internal server Error. ' + error.message })
         }
     },
 
@@ -91,7 +91,7 @@ module.exports = {
             return res.status(200).json(favoriteList)
 
         }catch (error){
-            return res.status(500).json({ message: error.message })
+            return res.status(500).json({ message: 'Internal server Error. ' + error.message })
         }
     },
 

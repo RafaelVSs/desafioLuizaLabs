@@ -5,9 +5,18 @@ info:
   description: API for managing clients, products and your favorites list.
 servers:
   - url: http://localhost:3000
+
+tags:
+  - name: auth
+  - name: clients
+  - name: products
+  - name: favorites  
 paths:
+
   /api/v1/auth:
     post:
+      tags:
+        - auth
       summary: Authenticate a client and return a JWT token.
       description: Endpoint to log in a client and generate an authentication token.
       requestBody:
@@ -17,9 +26,6 @@ paths:
             schema:
               type: object
               properties:
-                name:
-                  type: string
-                  example: "Rafael"
                 email:
                   type: string
                   example: "rafael@gmail.com"
@@ -34,6 +40,18 @@ paths:
                   token:
                     type: string
                     example: "eyJhbGciOiJIUzI1NiIsInR..."
+                  payloadFormated:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: "677981e83e77ce5c78a2ecf9"
+                      email:
+                        type: string
+                        example: "rafael@gmail.com"
+                      name:
+                        type: string
+                        example: "Rafael"
         '400':
           description: Bad request, invalid credentials.
           content:
@@ -53,7 +71,7 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: "Unauthorized, invalid credentials."
+                    example: "Unauthorized credentials."
         '404':
           description: Client not found or not registered.
           content:
@@ -63,7 +81,7 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: "Client not found."
+                    example: "Client not found or does not exist."
         '500':
           description: Error in server.
           content:
@@ -73,11 +91,14 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: "Internal server error."            
+                    example: "Internal server error."
+
   /api/v1/clients:
     post:
+      tags:
+        - clients
       summary: Create a client.
-      description: This endpoint allows clients to authenticate by providing their username and password. A valid token will be returned upon successful authentication.
+      description: Endpoint to register a client.
       requestBody:
         required: true
         content:
@@ -92,4 +113,932 @@ paths:
                   type: string
                   example: "rafael@gmail.com"
       responses:
-        
+        '201':
+          description: Created client.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseClient'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Name and email is required."
+        '409':
+          description: Client is already registered.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "There is already a client registered with this email."
+        '500':
+          description: Error in server.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Internal server error."
+    get:
+      tags:
+        - clients
+      summary: Return all clients.
+      description: Displays a list of registered cliets.
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Nzk4MWU4M2U3N2NlNWM3OGEyZWNmOSIsImVtYWlsIjoicmFmYWVsdGVzdGVAZ21haWwuY29tIiwibmFtZSI6IlJhZmFlbCIsImlhdCI6MTczNjAzNzMyMywiZXhwIjoxNzM2MDQwOTIzfQ.eMpb6A28nnMKMVmxVWO1WZPJpYeWeL_FR4oP2-NgJLc"
+      responses:
+        '200':
+          description: Return a list of clients objects.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/responseClient'
+        '401':
+          description: Unauthorized, invalid credentials or token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized credentials."          
+        '404':
+          description: Client not found or not registered.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "No clients found."
+        '500':
+          description: Error in server.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Internal server error."                      
+
+  /api/v1/clients/:id:
+    get:
+      tags:
+        - clients
+      summary: Return a client.
+      description: Endpoint returns the client that has the parameter id.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: '6777f1f40d269bb658468c13'
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Nzk4MWU4M2U3N2NlNWM3OGEyZWNmOSIsImVtYWlsIjoicmFmYWVsdGVzdGVAZ21haWwuY29tIiwibmFtZSI6IlJhZmFlbCIsImlhdCI6MTczNjAzNzMyMywiZXhwIjoxNzM2MDQwOTIzfQ.eMpb6A28nnMKMVmxVWO1WZPJpYeWeL_FR4oP2-NgJLc"  
+      responses:
+        '200':
+          description: Returns the client that has the parameter id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseClientId'        
+        '400': 
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "ID is required." 
+        '401':
+          description: Unauthorized, invalid credentials or token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized credentials."        
+        '404':
+          description: Client not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Client not found or does not exist."
+        '500':
+          description: Error in server.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Internal server error."  
+    patch:
+      tags:
+        - clients
+      summary: Edit a client.
+      description: Receives the client id as a parameter and makes the edit passed in the req body.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: '6777f1f40d269bb658468c13'
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Nzk4MWU4M2U3N2NlNWM3OGEyZWNmOSIsImVtYWlsIjoicmFmYWVsdGVzdGVAZ21haWwuY29tIiwibmFtZSI6IlJhZmFlbCIsImlhdCI6MTczNjAzNzMyMywiZXhwIjoxNzM2MDQwOTIzfQ.eMpb6A28nnMKMVmxVWO1WZPJpYeWeL_FR4oP2-NgJLc"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Rafael Silva"
+      responses:
+        '200':
+          description: Returns the edited client.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "6777f1f40d269bb658468c13"
+                  name:
+                    type: string
+                    example: "Rafael Silva"
+                  email:
+                    type: string
+                    example: "rafael@gmail.com"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Name or email must be provided for update."
+        '401':
+          description: Unauthorized, invalid credentials or token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized credentials."            
+        '404':
+          description: Client not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Client not found or does not exist."
+        '500':
+          description: Error in server.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Internal server error."                        
+    delete:
+      tags:
+        - clients
+      summary: Delete a client.
+      description: Endpoint delete the client that has the parameter id.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "6777f1f40d269bb658468c13"
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Nzk4MWU4M2U3N2NlNWM3OGEyZWNmOSIsImVtYWlsIjoicmFmYWVsdGVzdGVAZ21haWwuY29tIiwibmFtZSI6IlJhZmFlbCIsImlhdCI6MTczNjAzNzMyMywiZXhwIjoxNzM2MDQwOTIzfQ.eMpb6A28nnMKMVmxVWO1WZPJpYeWeL_FR4oP2-NgJLc"  
+      responses:
+        '204':
+          description: Client deleted successfully.
+        '400': 
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "ID is required."
+        '401':
+          description: Unauthorized, invalid credentials or token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized credentials."              
+        '404':
+          description: Client not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Client not found or does not exist."
+        '500':
+          description: Error in server.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Internal server error."               
+
+  /api/v1/products:
+    get:
+      tags:
+        - products
+      summary: Return all products.
+      description: Displays a list of registered products.
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Nzk4MWU4M2U3N2NlNWM3OGEyZWNmOSIsImVtYWlsIjoicmFmYWVsdGVzdGVAZ21haWwuY29tIiwibmFtZSI6IlJhZmFlbCIsImlhdCI6MTczNjAzNzMyMywiZXhwIjoxNzM2MDQwOTIzfQ.eMpb6A28nnMKMVmxVWO1WZPJpYeWeL_FR4oP2-NgJLc"
+      responses:
+        '200':
+          description: Return a list of products objects.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseAllProduct'
+        '401':
+          description: Unauthorized, invalid credentials or token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized credentials."
+        '404':
+          description: No Products found..
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "No Products found."
+        '500':
+          description: Error in server.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Internal server error."                    
+    post:
+      tags:
+        - products
+      summary: Create a product.
+      description: Endpoint to register a product.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "Produto 1"
+                image:
+                  type: string
+                  example: "base64_imagem_1"
+                price:
+                  type: number
+                  example: 10.50
+      responses:
+        '201':
+          description: Return a product list.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseProduct'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Title, image and price are required."
+        '500':
+          description: Error in server.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Internal server error."                    
+
+  /api/v1/products/:id:
+    get:
+      tags:
+        - products
+      summary: Return a product.
+      description: Endpoint returns the product that has the parameter id.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: '6777f1f40d269bb658468c13'
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Nzk4MWU4M2U3N2NlNWM3OGEyZWNmOSIsImVtYWlsIjoicmFmYWVsdGVzdGVAZ21haWwuY29tIiwibmFtZSI6IlJhZmFlbCIsImlhdCI6MTczNjAzNzMyMywiZXhwIjoxNzM2MDQwOTIzfQ.eMpb6A28nnMKMVmxVWO1WZPJpYeWeL_FR4oP2-NgJLc"
+      responses:
+        '200':
+          description: Return a products.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseProduct'
+        '400': 
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "ID is required."
+        '401':
+          description: Unauthorized, invalid credentials or token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized credentials."
+        '404': 
+          description: Not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Product not found or does not exist."
+        '500':
+          description: Error in server.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Internal server error."                        
+    delete:
+      tags:
+        - products
+      summary: Delete a product.
+      description: Endpoint delete the product that has the parameter id.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: '6777f1f40d269bb658468c13'
+      responses:
+        '204':
+          description: Product deleted successfully.
+        '400': 
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "ID is required."  
+        '404':
+          description: Product not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Product not found or does not exist."
+        '500':
+          description: Error in server.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Internal server error."
+
+  /api/v1/favorites/:id:
+    get:
+      tags:
+        - favorites
+      summary: Return favorites list.
+      description: Endpoint returns a client's favorites list receiving its id as a parameter.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: '6777f1f40d269bb658468c13'
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Nzk4MWU4M2U3N2NlNWM3OGEyZWNmOSIsImVtYWlsIjoicmFmYWVsdGVzdGVAZ21haWwuY29tIiwibmFtZSI6IlJhZmFlbCIsImlhdCI6MTczNjAzNzMyMywiZXhwIjoxNzM2MDQwOTIzfQ.eMpb6A28nnMKMVmxVWO1WZPJpYeWeL_FR4oP2-NgJLc"      
+      responses:
+        '200':
+          description: Return a favorites list.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/responseFavoritesList"
+        '400': 
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Client ID is required."
+        '401':
+          description: Unauthorized, invalid credentials or token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Access denied."
+        '404': 
+          description: Not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Client does not have a favorites list."            
+        '500':
+          description: Error in server.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Internal server error."  
+    post: 
+      tags:
+        - favorites
+      summary: Create a favorites list.
+      description: Endpoint to register a favorites list.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: '6777f1f40d269bb658468c13'
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Nzk4MWU4M2U3N2NlNWM3OGEyZWNmOSIsImVtYWlsIjoicmFmYWVsdGVzdGVAZ21haWwuY29tIiwibmFtZSI6IlJhZmFlbCIsImlhdCI6MTczNjAzNzMyMywiZXhwIjoxNzM2MDQwOTIzfQ.eMpb6A28nnMKMVmxVWO1WZPJpYeWeL_FR4oP2-NgJLc"
+      responses:
+        '201':
+          description: Return a favorites list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: "677ac9dd374b5161561fcc4c"
+                  id_client:
+                    type: string
+                    example: "677a9dda7540c8964c77d0c9"
+                  favorite_list:
+                    type: array
+                    example: []
+        '400': 
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Client ID is required."
+        '401':
+          description: Unauthorized, invalid credentials or token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Access denied."            
+        '409': 
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "This client already has a favorites list."
+        '500':
+          description: Error in server.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Internal server error."  
+    patch:
+      tags:
+        - favorites
+      summary: Add a product in favorites list.
+      description: The Endpoint adds a product passed in the request body to the client's favorites list, which is informed by the id parameter.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: '677a9dda7540c8964c77d0c9'
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Nzk4MWU4M2U3N2NlNWM3OGEyZWNmOSIsImVtYWlsIjoicmFmYWVsdGVzdGVAZ21haWwuY29tIiwibmFtZSI6IlJhZmFlbCIsImlhdCI6MTczNjAzNzMyMywiZXhwIjoxNzM2MDQwOTIzfQ.eMpb6A28nnMKMVmxVWO1WZPJpYeWeL_FR4oP2-NgJLc"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: string
+                  example: "6779aee2d80e533bfd9a7708"
+      responses:
+        '200':
+          description: Returns the edited favorites list.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/responseFavoritesList"
+        '400':
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Client and Product ID are required."
+                    - "Invalid Product ID format."  
+        '401':
+          description: Unauthorized, invalid credentials or token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Access denied."              
+        '404':
+          description: Favorites list not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Client does not have a favorites list."     
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Unable to add a product that has not been registered."
+                    - "Product is already in the favorites list."
+        '500':
+          description: Error in server.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Internal server error."  
+  /api/v1/favorites/remove/id:
+        patch:
+          tags:
+            - favorites
+          summary: Remove a product in favorites list.
+          description: The Endpoint remove a product passed in the request body to the client's favorites list, which is informed by the id parameter.
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: string
+              example: '677a9dda7540c8964c77d0c9'
+            - name: Authorization
+              in: header
+              required: true
+              schema:
+                type: string
+                example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Nzk4MWU4M2U3N2NlNWM3OGEyZWNmOSIsImVtYWlsIjoicmFmYWVsdGVzdGVAZ21haWwuY29tIiwibmFtZSI6IlJhZmFlbCIsImlhdCI6MTczNjAzNzMyMywiZXhwIjoxNzM2MDQwOTIzfQ.eMpb6A28nnMKMVmxVWO1WZPJpYeWeL_FR4oP2-NgJLc"
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    productId:
+                      type: string
+                      example: "6779aee2d80e533bfd9a7708"
+          responses:
+            '200':
+              description: Returns the edited favorites list.
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: "677ac9dd374b5161561fcc4c"
+                      id_client:
+                        type: string
+                        example: "677a9dda7540c8964c77d0c9"
+                      favorite_list:
+                        type: array
+                        example: ["6779aeecd80e533bfd9a770a", "6779aef6d80e533bfd9a770c"]
+            '400':
+              description: Bad Request.
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: "Client and Product ID are required." 
+            '401':
+              description: Unauthorized, invalid credentials or token.
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: "Access denied."              
+            '404':
+              description: Favorites list our product not found.
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        enum:
+                          - "Client does not have a favorites list." 
+                          - "Product not found in favorites list."    
+            '500':
+              description: Error in server.
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: "Internal server error."  
+
+components:
+  schemas:
+    responseClientId:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "6777f1f40d269bb658468c13"
+        name:
+          type: string
+          example: "Rafael"
+        email:
+          type: string
+          example: "rafael@gmail.com"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-01-03T14:19:32.557Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-01-03T14:19:32.557Z"
+        __v:
+          type: integer
+          example: 0
+
+    responseClient:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "6777f1f40d269bb658468c13"
+        name:
+          type: string
+          example: "Rafael"
+        email:
+          type: string
+          example: "rafael@gmail.com"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-01-03T14:19:32.557Z"    
+
+    responseProduct:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "6777f1f40d269bb658468c13"
+        title:
+          type: string
+          example: "Produto 1"
+        image:
+          type: string
+          example: "base64_imagem_1"
+        price:
+          type: number
+          example: 10.5
+
+    responseAllProduct:
+      type: array
+      items:
+        type: object
+        properties:
+          _id:
+            type: string
+            example: "6777f1f40d269bb658468c13"
+          title:
+            type: string
+            example: "Produto 1"
+          image:
+            type: string
+            example: "base64_imagem_1"
+          price:
+            type: number
+            example: 10.50
+      example:
+        - _id: "6777f1f40d269bb658468c13"
+          title: "Produto 1"
+          image: "base64_imagem_1"
+          price: 10.50
+        - _id: "6777f1f40d269bb658468c14"
+          title: "Produto 2"
+          image: "base64_imagem_2"
+          price: 20.00
+
+    responseFavoritesList:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "677ac9dd374b5161561fcc4c"
+        id_client:
+          type: string
+          example: "677a9dda7540c8964c77d0c9"
+        favorite_list:
+          type: array
+          example: ["6779aee2d80e533bfd9a7708", "6779aeecd80e533bfd9a770a", "6779aef6d80e533bfd9a770c"]

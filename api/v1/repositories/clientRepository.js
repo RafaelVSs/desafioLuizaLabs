@@ -6,7 +6,7 @@ module.exports = {
         try{
             return await Client.find()
         }catch (error){
-            throw new Error('Error searching for customers: ' + error.message)
+            throw error
         }
     },
 
@@ -14,7 +14,7 @@ module.exports = {
         try{
             return await Client.findById(id)
         }catch (error){
-            throw new Error('Error searching for client: ' + error.message)
+            throw error
         }
     },
 
@@ -23,7 +23,7 @@ module.exports = {
             const updatedClient = await Client.findByIdAndUpdate(id, clientData, { new: true}) 
             return updatedClient
         }catch (error){
-            throw new Error('Error updating client: ' + error.message)
+            throw error
         }
     },
 
@@ -31,7 +31,7 @@ module.exports = {
         try{
             return await Client.findByIdAndDelete(id)
         }catch (error){
-            throw new Error('Error deleting client: ' + error.message)
+            throw error
         }
     },
 
@@ -40,7 +40,7 @@ module.exports = {
             const client = await Client.findOne(email)
             return client
         }catch (error){
-            throw new Error('Error searching for client by email: ' + error.message)
+            throw error
         }
     },
 
@@ -49,7 +49,7 @@ module.exports = {
             const newClient = new Client(client)
             return await newClient.save()
         }catch (error){
-            throw new Error('Error creating client: ' + error.message)
+            throw error
         }
     },
 
