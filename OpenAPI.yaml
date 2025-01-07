@@ -10,7 +10,8 @@ tags:
   - name: auth
   - name: clients
   - name: products
-  - name: favorites  
+  - name: favorites
+
 paths:
 
   /api/v1/auth:
@@ -63,7 +64,7 @@ paths:
                     type: string
                     example: "Invalid credentials."
         '401':
-          description: Unauthorized, invalid credentials or token.
+          description: Returns that the client is not registered in the system.
           content:
             application/json:
               schema:
@@ -71,17 +72,7 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: "Unauthorized credentials."
-        '404':
-          description: Client not found or not registered.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Client not found or does not exist."
+                    example: "Unauthorized, invalid credentials."
         '500':
           description: Error in server.
           content:
@@ -171,15 +162,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/responseClient'
         '401':
-          description: Unauthorized, invalid credentials or token.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Unauthorized credentials."          
+          $ref: '#/components/responses/UnauthorizedError'           
         '404':
           description: Client not found or not registered.
           content:
@@ -238,15 +221,7 @@ paths:
                     type: string
                     example: "ID is required." 
         '401':
-          description: Unauthorized, invalid credentials or token.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Unauthorized credentials."        
+          $ref: '#/components/responses/UnauthorizedError'        
         '404':
           description: Client not found.
           content:
@@ -323,15 +298,7 @@ paths:
                     type: string
                     example: "Name or email must be provided for update."
         '401':
-          description: Unauthorized, invalid credentials or token.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Unauthorized credentials."            
+          $ref: '#/components/responses/UnauthorizedError'             
         '404':
           description: Client not found.
           content:
@@ -384,15 +351,7 @@ paths:
                     type: string
                     example: "ID is required."
         '401':
-          description: Unauthorized, invalid credentials or token.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Unauthorized credentials."              
+          $ref: '#/components/responses/UnauthorizedError'               
         '404':
           description: Client not found.
           content:
@@ -435,15 +394,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/responseAllProduct'
         '401':
-          description: Unauthorized, invalid credentials or token.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Unauthorized credentials."
+          $ref: '#/components/responses/UnauthorizedError' 
         '404':
           description: No Products found..
           content:
@@ -550,15 +501,7 @@ paths:
                     type: string
                     example: "ID is required."
         '401':
-          description: Unauthorized, invalid credentials or token.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Unauthorized credentials."
+          $ref: '#/components/responses/UnauthorizedError' 
         '404': 
           description: Not found.
           content:
@@ -662,15 +605,7 @@ paths:
                     type: string
                     example: "Client ID is required."
         '401':
-          description: Unauthorized, invalid credentials or token.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Access denied."
+          $ref: '#/components/responses/UnauthorizedError' 
         '404': 
           description: Not found.
           content:
@@ -737,15 +672,7 @@ paths:
                     type: string
                     example: "Client ID is required."
         '401':
-          description: Unauthorized, invalid credentials or token.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Access denied."            
+          $ref: '#/components/responses/UnauthorizedError'        
         '409': 
           description: Bad request.
           content:
@@ -814,15 +741,7 @@ paths:
                     - "Client and Product ID are required."
                     - "Invalid Product ID format."  
         '401':
-          description: Unauthorized, invalid credentials or token.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Access denied."              
+              $ref: '#/components/responses/UnauthorizedError'              
         '404':
           description: Favorites list not found.
           content:
@@ -912,15 +831,7 @@ paths:
                         type: string
                         example: "Client and Product ID are required." 
             '401':
-              description: Unauthorized, invalid credentials or token.
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    properties:
-                      message:
-                        type: string
-                        example: "Access denied."              
+              $ref: '#/components/responses/UnauthorizedError'            
             '404':
               description: Favorites list our product not found.
               content:
@@ -945,6 +856,27 @@ paths:
                         example: "Internal server error."  
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >
+        Authentication by JWT token.
+        **Error 401 (Unauthorized)** will be returned if the token is invalid, missing or expired.
+  
+  responses:
+    UnauthorizedError:
+      description: Access denied. Invalid token.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Access denied."
+  
   schemas:
     responseClientId:
       type: object

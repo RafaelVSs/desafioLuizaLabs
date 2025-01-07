@@ -7,9 +7,13 @@ const JWT_SECRET = envsConfig.JWT_SECRET
 module.exports = {
     async login(email){
         try{
-            const client = await clientRepository.findOneEmail(email)
+            if(!email){
+                throw new Error('Email is required.')
+            }
+            const formatedEmail = { email: email}
+            const client = await clientRepository.findOneEmail(formatedEmail)
             if(!client){
-                throw new Error('Client not found or does not exist.')
+                throw new Error('Unauthorized, invalid credentials.')
             }
 
             const token = jwt.sign(

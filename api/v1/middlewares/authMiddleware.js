@@ -1,4 +1,3 @@
-const authService = require('../services/authService')
 const jwt = require('jsonwebtoken')
 const envsConfig = require('../../../config/envsConfig')
 

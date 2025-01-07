@@ -4,12 +4,12 @@ module.exports = {
     async getClients(req, res){
         try{
             const listClients = await clientService.getClients()
-            if(!listClients || listClients.length === 0){
-                return res.status(404).json({ message: 'No clients found.' })
-            }
             
             return res.status(200).json(listClients) 
         }catch (error){
+            if(error.message === 'No clients found.'){
+                return res.status(404).json({ message: error.message }) 
+            }
             return res.status(500).json({ message: 'Internal server Error. ' + error.message })
         }
     },
@@ -31,13 +31,8 @@ module.exports = {
         try{
             const { email, name } = req.body
             const newClient = await clientService.createClient(name, email)
-            const newClientFormated = {
-                id: newClient.id,
-                name: newClient.name,
-                email: newClient.email,
-                createdAt: newClient.createdAt
-            }
-            return res.status(201).json(newClientFormated)
+            
+            return res.status(201).json(newClient)
         }catch (error){
             if(error.message === 'Name and email is required.'){
                 return res.status(400).json({ message: error.message })
@@ -57,18 +52,14 @@ module.exports = {
             const id = req.params.id
             const data = req.body
             const updatedClient = await clientService.updateClient(id, data)
-            const clientFormated = {
-                id: updatedClient.id,
-                name: updatedClient.name,
-                email: updatedClient.email
-            }
-            return res.status(200).json(clientFormated)
+            
+            return res.status(200).json(updatedClient)
         }catch (error){
             if(error.message === 'Client not found or does not exist.'){
                 return res.status(404).json({ message: error.message })
             }
 
-            if(error.message === 'ID, name or email must be provided for update.' || error.message === 'ID is required.'){
+            if(error.message === 'Name or email must be provided for update.' || error.message === 'ID is required.'){
                 return res.status(400).json({ message: error.message })
             }
 

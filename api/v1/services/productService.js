@@ -3,7 +3,13 @@ const productRepository = require('../repositories/productRepository')
 module.exports = {
     async getProducts(){
         try{
-            return await productRepository.findAll()
+            const listProducts = await productRepository.findAll()
+
+            if(!listProducts || listProducts.length === 0){
+                throw new Error('No Products found.' )
+            }
+
+            return listProducts
         }catch (error){
             throw error
         }
@@ -16,7 +22,12 @@ module.exports = {
             if(!product){
                 throw new Error('Product not found or does not exist.')
             }
-            return product
+            const productFormated = {
+                title: product.title,
+                image: product.image,
+                price: product.price
+            }
+            return productFormated
         }catch (error){
             throw error
         }
