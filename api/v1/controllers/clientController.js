@@ -20,6 +20,9 @@ module.exports = {
             const client = await clientService.getClientById(id)
             return res.status(200).json(client)
         }catch (error){
+            if(error.message === 'ID is required.'){
+                return res.status(400).json({ message: error.message })
+            }
             if(error.message === 'Client not found or does not exist.'){
                 return res.status(404).json({ message: error.message })
             }
