@@ -4,8 +4,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "test": "jest --passWithNoTests"
-
+    "test": "jest --passWithNoTests",
+    "seed": "node seed"
   },
   "dependencies": {
     "cors": "^2.8.5",

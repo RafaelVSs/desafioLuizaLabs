@@ -1,4 +1,5 @@
-const Product = require('../models/Product')
+const Product = require('./api/v1/models/Product')
+const dbConnection = require('./config/db')
 
 const products = [
     {
@@ -53,4 +54,16 @@ const products = [
     }
 ]
 
+const insertProducts = async () =>{
+    try{
+        await dbConnection()
+        await Product.insertMany(products)
+        console.log('Products inserted successfully.')
+        process.exit(0)
+    }catch(error){
+        throw error
+    }
+}
+
+insertProducts()
 

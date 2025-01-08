@@ -296,7 +296,9 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: "Name or email must be provided for update."
+                    enum:
+                      - "Name or email must be provided for update."
+                      - "ID is required."
         '401':
           $ref: '#/components/responses/UnauthorizedError'             
         '404':
