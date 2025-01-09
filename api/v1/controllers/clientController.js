@@ -1,4 +1,5 @@
 const clientService = require('../services/clientService')
+const clientSchema = require('../schemas/clientSchema')
 
 module.exports = {
     async getClients(req, res){
@@ -33,6 +34,10 @@ module.exports = {
     async createClient(req, res){
         try{
             const { email, name } = req.body
+            const { error } = await clientSchema.createClientSchema.validate(req.body)
+            if(error){
+                throw new Error('Name and email is required.')
+            }
             const newClient = await clientService.createClient(name, email)
             
             return res.status(201).json(newClient)
@@ -54,6 +59,12 @@ module.exports = {
         try{
             const id = req.params.id
             const data = req.body
+
+            const { error } = clientSchema.editClientSchema.validate(req.body)
+            if(error){
+                throw new Error('Name or email must be provided for update.')
+            }
+
             const updatedClient = await clientService.updateClient(id, data)
             
             return res.status(200).json(updatedClient)
@@ -65,7 +76,7 @@ module.exports = {
                 return res.status(404).json({ message: error.message })
             }
 
-            if(error.message === 'Name or email must be provided for update.' || error.message === 'ID is required.'){
+            if(error.message === 'Name or email must be provided for update.'){
                 return res.status(400).json({ message: error.message })
             }
 

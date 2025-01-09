@@ -7,11 +7,10 @@ module.exports = {
             if(!clientId){
                 throw new Error('Client ID is required.')
             }
-            const existingFavoritesList = await this.getFavoritesList(clientId)
-            if(existingFavoritesList){
+            const favoriteList = await favoriteRepository.findByClientId(clientId)
+            if(favoriteList){
                 throw new Error('This client already has a favorites list.')
             }
-
             const favorite = {
                 id_client: clientId,
                 favorite_list: []
@@ -25,9 +24,6 @@ module.exports = {
 
     async addProductFavoriteList(clientId, productId){
         try{
-            if(!clientId || !productId){
-                throw new Error('Client and Product ID id are required.')
-            }
             if (!mongoose.isValidObjectId(productId)){
                 throw new Error('Invalid Product ID format.')
             }
@@ -57,9 +53,6 @@ module.exports = {
 
     async removeProductFavoriteList(clientId, productId){
         try{
-            if(!clientId || !productId){
-                throw new Error('Client and Product ID id are required.')
-            }
             const favorite = await favoriteRepository.findByClientId(clientId)
             if(!favorite){
                 throw new Error('Client does not have a favorites list.')

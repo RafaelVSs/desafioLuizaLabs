@@ -17,7 +17,6 @@ module.exports = {
 
     async getProductById(id){
         try{
-            validateId(id)
             const product = await productRepository.findById(id)
             if(!product){
                 throw new Error('Product not found or does not exist.')
@@ -35,9 +34,6 @@ module.exports = {
 
     async createProduct(title, image, price){
         try{
-            if(!title || !image || !price){
-                throw new Error('Title, image and price are required.')
-            }
             const product = { title, image, price }
             return await productRepository.createProduct(product)
         }catch (error){
@@ -47,7 +43,6 @@ module.exports = {
 
     async deleteProduct(id){
         try{
-            validateId(id)
             const existingProduct = await this.getProductsById(id)
             if(!existingProduct){
                 throw new Error('Product not found or does not exist.')
@@ -58,11 +53,4 @@ module.exports = {
         }
     }
     
-}
-
-
-function validateId(id){
-    if(!id){
-        throw new Error('ID is required.')
-    }
 }

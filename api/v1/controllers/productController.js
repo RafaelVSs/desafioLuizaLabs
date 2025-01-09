@@ -1,4 +1,5 @@
 const productService = require('../services/productService')
+const productSchema = require('../schemas/productSchema')
 
 module.exports = {
     async getProducts(req, res){
@@ -15,14 +16,10 @@ module.exports = {
 
     async getProductById(req, res){
         try{
-            const id = req.params.id
+            const id = req.params.id   
             const product = await productService.getProductById(id)
             return res.status(200).json(product)
         }catch (error){
-            if(error.message === 'ID is required.'){
-                return res.status(400)
-            }
-
             if(error.message === 'Product not found or does not exist.'){
                 return res.status(404).json({ message: error.message })
             }
@@ -34,6 +31,10 @@ module.exports = {
     async createProduct(req, res){
         try{
             const { title, image, price } = req.body
+            const { error } = productSchema.createProductSchema.validate(req.body)
+            if(error){
+                throw new Error('Title, image and price are required.')
+            }    
             const newProduct = await productService.createProduct(title, image, price)
 
             return res.status(201).json(newProduct)
@@ -49,14 +50,11 @@ module.exports = {
     async deleteProduct(req, res){
         try{
             const id = req.params.id
+
             await productService.deleteProduct(id)
 
             return res.status(204).send()
         }catch (error){
-            if(error.message === 'ID is required.'){
-                return res.status(400).json({ message: error.message })
-            }
-
             if(error.message === 'Product not found or does not exist.'){
                 return res.status(404).json({ message: error.message })
             }

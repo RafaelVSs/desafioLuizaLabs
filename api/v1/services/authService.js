@@ -7,9 +7,6 @@ const JWT_SECRET = envsConfig.JWT_SECRET
 module.exports = {
     async login(email){
         try{
-            if(!email){
-                throw new Error('Email is required.')
-            }
             const formatedEmail = { email: email}
             const client = await clientRepository.findOneEmail(formatedEmail)
             if(!client){

@@ -28,9 +28,6 @@ module.exports = {
 
     async createClient(name, email){
         try{
-            if (!name || !email){
-                throw new Error('Name and email is required.')
-            }
             const existingClient = await clientRepository.findOneEmail({email})
             if(existingClient){
                 throw new Error('There is already a client registered with this email.')

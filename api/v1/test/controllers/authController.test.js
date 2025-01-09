@@ -11,7 +11,7 @@ describe('Login', () => {
             json: jest.fn()
         }
 
-        const error = { message: 'Email is required.'}
+        const error = { message: 'Format invalid email'}
         authService.login.mockRejectedValue(error)
         await authController.login(req, res)
 
@@ -20,7 +20,7 @@ describe('Login', () => {
     })
 
     it('return 401', async () => {
-        const req = { body: { email: "test@test.com" } }
+        const req = { body: { email: 'test@test.com' } }
         const res = {
             status: jest.fn().mockReturnThis(),
             json: jest.fn()

@@ -1,4 +1,5 @@
 const favoriteService = require('../services/favoriteService')
+const favoritesSchema = require('../schemas/favoritesSchema')
 
 module.exports = {
     async createFavoriteList(req, res){
@@ -24,11 +25,17 @@ module.exports = {
         try{
             const clientId = req.params.id
             const productId = req.body.productId
+
+            const { error } = favoritesSchema.productIdSchema.validate(req.body)
+            if(error){
+                throw new Error('Product ID is required.')
+            }    
+
             const FavoriteList = await favoriteService.addProductFavoriteList(clientId, productId)
             return res.status(200).json(FavoriteList)
 
         }catch (error){
-            if(error.message === 'Client and Product ID id are required.'){
+            if(error.message === 'Product ID is required.'){
                 return res.status(400).json({ message: error.message })
             }
 
@@ -57,6 +64,11 @@ module.exports = {
             const clientId = req.params.id
             const productId = req.body.productId
 
+            const { error } = favoritesSchema.productIdSchema.validate(req.body)
+            if(error){
+                throw new Error('Product ID is required.')
+            }
+
             const favoriteList = await favoriteService.removeProductFavoriteList(clientId, productId)
             return res.status(200).json(favoriteList)
 
@@ -65,7 +77,7 @@ module.exports = {
                 return res.status(404).json({ message: error.message })
             }
 
-            if(error.message === 'Client and Product ID id are required.'){
+            if(error.message === 'Product ID is required.'){
                 return res.status(400).json({ message: error.message })
             }
 
