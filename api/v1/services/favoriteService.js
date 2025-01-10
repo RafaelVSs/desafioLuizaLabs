@@ -4,9 +4,6 @@ const mongoose = require('mongoose')
 module.exports = {
     async createFavoriteList(clientId){
         try{
-            if(!clientId){
-                throw new Error('Client ID is required.')
-            }
             const favoriteList = await favoriteRepository.findByClientId(clientId)
             if(favoriteList){
                 throw new Error('This client already has a favorites list.')

@@ -3,7 +3,7 @@ const clientService = require('../../services/clientService')
 
 jest.mock('../../services/clientService')
 
-describe('Cliente Controller', () => {
+describe('Client Controller', () => {
     describe('getClients', () => {
         it('success get all clients, return 200', async () => {
             const req = {}

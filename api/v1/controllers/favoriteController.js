@@ -9,10 +9,6 @@ module.exports = {
             return res.status(201).json(newFavoriteList)
 
         }catch (error){
-            if(error.message === 'Client ID is required.'){
-                return res.status(400).json({ message: error.message })
-            }
-
             if(error.message === 'This client already has a favorites list.'){
                 return res.status(409).json({ message: error.message })
             }
